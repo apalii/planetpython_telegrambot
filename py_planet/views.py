@@ -79,6 +79,7 @@ class CommandReceiveView(View):
             except AttributeError as e:
                 TelegramBot.sendMessage(chat_id, '{} {} - do not send me such pictures ! '.format(
                     first_name, last_name))
+                return JsonResponse({}, status=200)
 
             if func:
                 TelegramBot.sendMessage(chat_id, func(), parse_mode='Markdown')
