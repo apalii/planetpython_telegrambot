@@ -70,7 +70,7 @@ class CommandReceiveView(View):
         else:
             chat_id = payload['message']['chat']['id']
             first_name = payload['message']['chat']['first_name']
-            last_name = payload['message']['chat']['first_name']
+            last_name = payload['message']['chat']['last_name']
             cmd = payload['message'].get('text')  # command
 
             try:
