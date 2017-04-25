@@ -69,16 +69,14 @@ class CommandReceiveView(View):
             return HttpResponseBadRequest('Invalid request body')
         else:
             chat_id = payload['message']['chat']['id']
-            first_name = payload['message']['chat']['first_name']
-            last_name = payload['message']['chat']['last_name']
+            name = payload['message']['chat']['first_name']
             cmd = payload['message'].get('text')  # command
 
             try:
                 # We need to handle case with pictures
                 func = commands.get(cmd.split()[0].lower())
             except AttributeError as e:
-                TelegramBot.sendMessage(chat_id, '{} {} - do not send me such pictures ! '.format(
-                    first_name, last_name))
+                TelegramBot.sendMessage(chat_id, '{}, send me only text commands !'.format(name))
                 return JsonResponse({}, status=200)
 
             if func:
@@ -91,5 +89,3 @@ class CommandReceiveView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super(CommandReceiveView, self).dispatch(request, *args, **kwargs)
-
-
