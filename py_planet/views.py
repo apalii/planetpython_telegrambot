@@ -69,9 +69,17 @@ class CommandReceiveView(View):
             return HttpResponseBadRequest('Invalid request body')
         else:
             chat_id = payload['message']['chat']['id']
+            first_name = payload['message']['chat']['first_name']
+            last_name = payload['message']['chat']['first_name']
             cmd = payload['message'].get('text')  # command
 
-            func = commands.get(cmd.split()[0].lower())
+            try:
+                # We need to handle case with pictures
+                func = commands.get(cmd.split()[0].lower())
+            except AttributeError as e:
+                TelegramBot.sendMessage(chat_id, '{} {} - do not send me such pictures ! '.format(
+                    first_name, last_name))
+
             if func:
                 TelegramBot.sendMessage(chat_id, func(), parse_mode='Markdown')
             else:
