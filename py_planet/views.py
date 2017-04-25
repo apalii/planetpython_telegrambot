@@ -3,7 +3,9 @@
 import json
 import logging
 
+import requests
 import telepot
+
 from django.template.loader import render_to_string
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.views.generic import View
@@ -18,6 +20,10 @@ TelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
 
 logger = logging.getLogger('telegram.bot')
 
+def _display_kurs():
+    url = "https://api.privatbank.ua/p24api/"
+    url += "pubinfo?json&exchange&coursid=11"
+    return render_to_string('kurs.md', {'kurs': requests.get(url).json()})
 
 def _display_help():
     return render_to_string('help.md')
@@ -36,6 +42,7 @@ class CommandReceiveView(View):
             '/start': _display_help,
             'help': _display_help,
             'feed': _display_planetpy_feed,
+            'kurs': _display_kurs,
         }
 
         raw = request.body.decode('utf-8')
@@ -53,7 +60,7 @@ class CommandReceiveView(View):
             if func:
                 TelegramBot.sendMessage(chat_id, func(), parse_mode='Markdown')
             else:
-                TelegramBot.sendMessage(chat_id, 'I do not understand you, Sir!')
+                TelegramBot.sendMessage(chat_id, 'I do not understand you, walk on home, boy!')
 
         return JsonResponse({}, status=200)
 
