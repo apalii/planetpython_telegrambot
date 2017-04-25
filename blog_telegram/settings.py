@@ -9,7 +9,7 @@ env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env()
 
 BASE_DIR = str(root)
-SECRET_KEY = env.str('SECRET_KEY', 'my-santa-claus')
+SECRET_KEY = env.str('SECRET_KEY', 'satan-claus')
 
 DEBUG = env.bool('DEBUG', True)
 
@@ -94,7 +94,7 @@ STATIC_URL = '/static/'
 
 
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN', 'test')
-
+WEATHER_API_KEY = env.str('WEATHER_API_KEY', '')
 
 LOGGING = {
     'version': 1,
