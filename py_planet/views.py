@@ -40,7 +40,7 @@ def _display_my_shows():
 
 def _display_weather(city='Lviv'):
     api_key = settings.WEATHER_API_KEY
-    api_url = "http://api.openweathermap.org/data/2.5/weather?q={}&mode=json&appid={}".format(
+    api_url = "http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&mode=json&appid={}".format(
         city, api_key)
 
     return render_to_string('weather.md', {'weather': requests.get(api_url).json()})
