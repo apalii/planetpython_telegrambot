@@ -20,6 +20,12 @@ TelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
 logger = logging.getLogger('telegram.bot')
 
 
+def _name_resolver(json_dict):
+    if json_dict['message']['chat']['type'] == 'group':
+        return json_dict['message']['from']['first_name']
+    return json_dict['message']['chat']['first_name']
+
+
 def _display_help():
     return render_to_string('help.md')
 
@@ -38,7 +44,7 @@ def _display_my_shows():
     return render_to_string('myshows.md')
 
 
-def _display_weather(city='Lviv'):
+def _display_weather(city='Kiev'):
     api_key = settings.WEATHER_API_KEY
     api_url = "http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&mode=json&appid={}".format(
         city, api_key)
@@ -51,6 +57,15 @@ class CommandReceiveView(View):
         if bot_token != settings.TELEGRAM_BOT_TOKEN:
             return HttpResponseForbidden('Invalid token')
 
+
+        commands_in_chat = {
+            '/start@apaliibot': _display_help,
+            '/help@apaliibot': _display_help,
+            '/feed@apaliibot': _display_planetpy_feed,
+            '/kurs@apaliibot': _display_kurs,
+            '/myshows@apaliibot': _display_my_shows,
+            '/weather@apaliibot': _display_weather,
+        }
         commands = {
             '/start': _display_help,
             '/help': _display_help,
@@ -60,6 +75,7 @@ class CommandReceiveView(View):
             '/weather': _display_weather,
         }
 
+        commands.update(commands_in_chat)
         raw = request.body.decode('utf-8')
         logger.info(raw)
 
@@ -68,8 +84,9 @@ class CommandReceiveView(View):
         except ValueError:
             return HttpResponseBadRequest('Invalid request body')
         else:
+            print payload
             chat_id = payload['message']['chat']['id']
-            name = payload['message']['chat']['first_name']
+            name = _name_resolver(payload)
             cmd = payload['message'].get('text')  # command
 
             try:
